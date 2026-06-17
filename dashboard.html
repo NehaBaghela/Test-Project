@@ -1,8 +1,361 @@
-<<<<<<< Updated upstream
-=======
-changing the code here.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pulse — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --border: 240 5.9% 90%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,sans-serif;
+    background:hsl(var(--background));
+    color:hsl(var(--foreground));
+    font-size:14px;
+  }
+  a{color:inherit;text-decoration:none;}
 
+  /* Layout */
+  .app{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+  .sidebar{
+    border-right:1px solid hsl(var(--border));
+    padding:20px 14px;
+    display:flex;flex-direction:column;gap:4px;
+  }
+  .brand{display:flex;align-items:center;gap:8px;padding:6px 10px 22px;font-weight:700;font-size:16px;}
+  .brand .dot{width:18px;height:18px;border-radius:5px;background:hsl(var(--primary));}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 10px;border-radius:var(--radius);
+    color:hsl(var(--muted-foreground));font-weight:500;
+  }
+  .nav-item svg{width:16px;height:16px;flex-shrink:0;}
+  .nav-item.active{background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));}
+  .nav-item:hover:not(.active){background:hsl(var(--accent) / .5);}
+  .sidebar-footer{margin-top:auto;padding:10px;border-top:1px solid hsl(var(--border));}
 
-changing the code again.
+  .main{display:flex;flex-direction:column;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 28px;border-bottom:1px solid hsl(var(--border));
+    gap:16px;
+  }
+  .search{
+    flex:1;max-width:340px;
+    border:1px solid hsl(var(--border));
+    border-radius:var(--radius);
+    padding:7px 12px;
+    color:hsl(var(--muted-foreground));
+    font-size:13px;
+  }
+  .topbar-actions{display:flex;align-items:center;gap:10px;}
+  .avatar{
+    width:30px;height:30px;border-radius:50%;
+    background:hsl(var(--chart-3));color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:600;
+  }
 
->>>>>>> Stashed changes
+  .content{padding:28px;display:flex;flex-direction:column;gap:24px;}
+  .page-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .page-head h1{font-size:20px;margin:0 0 2px;}
+  .page-head p{margin:0;color:hsl(var(--muted-foreground));font-size:13px;}
+  .head-controls{display:flex;align-items:center;gap:10px;}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    border-radius:var(--radius);
+    font-weight:500;font-size:13px;
+    padding:7px 14px;cursor:pointer;border:1px solid transparent;
+    transition:opacity .15s ease;
+  }
+  .btn:hover{opacity:.88;}
+  .btn svg{width:14px;height:14px;}
+  .btn-default{background:hsl(var(--primary));color:hsl(var(--primary-foreground));}
+  .btn-secondary{background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));}
+  .btn-outline{background:transparent;border-color:hsl(var(--border));color:hsl(var(--foreground));}
+  .btn-ghost{background:transparent;color:hsl(var(--foreground));}
+  .btn-ghost:hover{background:hsl(var(--accent));opacity:1;}
+  .btn-icon{padding:7px;}
+
+  .btn-group{display:inline-flex;border:1px solid hsl(var(--border));border-radius:var(--radius);overflow:hidden;}
+  .btn-group .seg{
+    padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer;
+    color:hsl(var(--muted-foreground));border-right:1px solid hsl(var(--border));
+  }
+  .btn-group .seg:last-child{border-right:none;}
+  .btn-group .seg.active{background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));}
+  .btn-group .seg:hover:not(.active){background:hsl(var(--accent) / .5);}
+
+  /* Badges */
+  .badge{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;
+  }
+  .badge-secondary{background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));}
+  .badge-outline{background:transparent;border:1px solid hsl(var(--border));color:hsl(var(--foreground));}
+  .badge-success{background:hsl(173 58% 39% / .12);color:hsl(173 58% 28%);}
+  .badge-destructive{background:hsl(var(--destructive) / .1);color:hsl(var(--destructive));}
+
+  /* Cards */
+  .card{
+    border:1px solid hsl(var(--border));
+    border-radius:calc(var(--radius) + 2px);
+    background:hsl(var(--background));
+    padding:18px;
+  }
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .stat-label{color:hsl(var(--muted-foreground));font-size:12px;margin-bottom:6px;}
+  .stat-value{font-size:24px;font-weight:700;margin-bottom:8px;}
+
+  .row{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;}
+  .card h2{font-size:14px;margin:0 0 4px;}
+  .card .sub{color:hsl(var(--muted-foreground));font-size:12px;margin:0 0 16px;}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;color:hsl(var(--muted-foreground));font-weight:500;font-size:12px;padding:0 0 10px;border-bottom:1px solid hsl(var(--border));}
+  td{padding:11px 0;border-bottom:1px solid hsl(var(--border) / .6);}
+  tr:last-child td{border-bottom:none;}
+  .person{display:flex;align-items:center;gap:8px;}
+  .person .avatar{width:22px;height:22px;font-size:10px;}
+
+  /* Team list */
+  .team-item{display:flex;align-items:center;justify-content:between;gap:10px;padding:10px 0;border-bottom:1px solid hsl(var(--border) / .6);}
+  .team-item:last-child{border-bottom:none;}
+  .team-info{flex:1;}
+  .team-name{font-weight:500;}
+  .team-role{color:hsl(var(--muted-foreground));font-size:12px;}
+
+  /* Dialog */
+  .overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.4);
+    display:none;align-items:center;justify-content:center;z-index:50;
+  }
+  .overlay.open{display:flex;}
+  .dialog{
+    width:380px;background:hsl(var(--background));
+    border:1px solid hsl(var(--border));border-radius:calc(var(--radius)+2px);
+    padding:22px;box-shadow:0 12px 40px rgba(0,0,0,.18);
+  }
+  .dialog h3{margin:0 0 6px;font-size:16px;}
+  .dialog p{margin:0 0 18px;color:hsl(var(--muted-foreground));font-size:13px;}
+  .dialog-actions{display:flex;justify-content:flex-end;gap:8px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot"></span> Pulse</div>
+    <a class="nav-item active" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Overview
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>
+      Projects
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M21 20c0-2.4-1.5-4.4-3.6-5.2"/></svg>
+      Team
+    </a>
+    <a class="nav-item" id="open-2fa" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Settings
+    </a>
+    <div class="sidebar-footer">
+      <div class="person">
+        <span class="avatar">SS</span>
+        <div>
+          <div style="font-weight:500;">Sara Shah</div>
+          <div style="color:hsl(var(--muted-foreground));font-size:11px;">sara@pulse.io</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="search">Search projects, people, files…</div>
+      <div class="topbar-actions">
+        <button class="btn btn-outline">Export</button>
+        <button class="btn btn-default">+ New Project</button>
+        <span class="avatar">SS</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <h1>Overview</h1>
+          <p>Here's what's happening across your projects this week.</p>
+        </div>
+        <div class="head-controls">
+          <div class="btn-group">
+            <div class="seg">Day</div>
+            <div class="seg active">Week</div>
+            <div class="seg">Month</div>
+          </div>
+          <button class="btn btn-ghost btn-icon" title="Refresh">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card">
+          <div class="stat-label">Revenue</div>
+          <div class="stat-value">$48,290</div>
+          <span class="badge badge-success">+12.4%</span>
+        </div>
+        <div class="card">
+          <div class="stat-label">Active users</div>
+          <div class="stat-value">2,841</div>
+          <span class="badge badge-success">+4.1%</span>
+        </div>
+        <div class="card">
+          <div class="stat-label">Conversion</div>
+          <div class="stat-value">3.6%</div>
+          <span class="badge badge-outline">flat</span>
+        </div>
+        <div class="card">
+          <div class="stat-label">Churn</div>
+          <div class="stat-value">1.2%</div>
+          <span class="badge badge-destructive">+0.3%</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h2>Weekly traffic</h2>
+          <p class="sub">Sessions by day, last 7 days</p>
+          <svg viewBox="0 0 420 160" width="100%" height="160">
+            <g font-size="10" fill="hsl(var(--muted-foreground))">
+              <text x="20" y="155">Mon</text><text x="75" y="155">Tue</text><text x="130" y="155">Wed</text>
+              <text x="190" y="155">Thu</text><text x="245" y="155">Fri</text><text x="300" y="155">Sat</text><text x="360" y="155">Sun</text>
+            </g>
+            <rect x="14" y="80" width="22" height="60" rx="3" fill="hsl(var(--chart-1))"/>
+            <rect x="69" y="60" width="22" height="80" rx="3" fill="hsl(var(--chart-2))"/>
+            <rect x="124" y="40" width="22" height="100" rx="3" fill="hsl(var(--chart-3))"/>
+            <rect x="179" y="55" width="22" height="85" rx="3" fill="hsl(var(--chart-4))"/>
+            <rect x="234" y="20" width="22" height="120" rx="3" fill="hsl(var(--chart-5))"/>
+            <rect x="289" y="50" width="22" height="90" rx="3" fill="hsl(var(--chart-1))"/>
+            <rect x="344" y="70" width="22" height="70" rx="3" fill="hsl(var(--chart-2))"/>
+          </svg>
+        </div>
+
+        <div class="card">
+          <h2>Team</h2>
+          <p class="sub">4 members active this week</p>
+          <div class="team-item">
+            <span class="avatar">JL</span>
+            <div class="team-info"><div class="team-name">Jamie Lin</div><div class="team-role">Product designer</div></div>
+            <button class="btn btn-ghost btn-icon">⋯</button>
+          </div>
+          <div class="team-item">
+            <span class="avatar" style="background:hsl(var(--chart-4));">RK</span>
+            <div class="team-info"><div class="team-name">Ravi Kapoor</div><div class="team-role">Engineer</div></div>
+            <button class="btn btn-ghost btn-icon">⋯</button>
+          </div>
+          <div class="team-item">
+            <span class="avatar" style="background:hsl(var(--chart-2));">EM</span>
+            <div class="team-info"><div class="team-name">Elena Moss</div><div class="team-role">PM</div></div>
+            <button class="btn btn-ghost btn-icon">⋯</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Recent activity</h2>
+        <p class="sub">Latest updates across your projects</p>
+        <table>
+          <thead>
+            <tr><th>Project</th><th>Owner</th><th>Status</th><th>Updated</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Onboarding redesign</td>
+              <td><div class="person"><span class="avatar">JL</span> Jamie Lin</div></td>
+              <td><span class="badge badge-success">Completed</span></td>
+              <td>2h ago</td>
+              <td><button class="btn btn-ghost">View</button></td>
+            </tr>
+            <tr>
+              <td>Billing API migration</td>
+              <td><div class="person"><span class="avatar" style="background:hsl(var(--chart-4));">RK</span> Ravi Kapoor</div></td>
+              <td><span class="badge badge-outline">In progress</span></td>
+              <td>5h ago</td>
+              <td><button class="btn btn-ghost">View</button></td>
+            </tr>
+            <tr>
+              <td>Q3 roadmap review</td>
+              <td><div class="person"><span class="avatar" style="background:hsl(var(--chart-2));">EM</span> Elena Moss</div></td>
+              <td><span class="badge badge-secondary">Pending</span></td>
+              <td>1d ago</td>
+              <td><button class="btn btn-ghost">View</button></td>
+            </tr>
+            <tr>
+              <td>Notification service</td>
+              <td><div class="person"><span class="avatar">JL</span> Jamie Lin</div></td>
+              <td><span class="badge badge-destructive">Failed</span></td>
+              <td>2d ago</td>
+              <td><button class="btn btn-ghost">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="dialog">
+    <h3>Two-factor authentication</h3>
+    <p>Verify via email or phone number.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" id="close-2fa">Cancel</button>
+      <button class="btn btn-default">Enable</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('overlay');
+  document.getElementById('open-2fa').addEventListener('click', (e) => { e.preventDefault(); overlay.classList.add('open'); });
+  document.getElementById('close-2fa').addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+  document.querySelectorAll('.btn-group .seg').forEach(seg => {
+    seg.addEventListener('click', () => {
+      document.querySelectorAll('.btn-group .seg').forEach(s => s.classList.remove('active'));
+      seg.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
